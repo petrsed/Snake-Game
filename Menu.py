@@ -58,14 +58,16 @@ class PauseMenu:
 
     def get_click(self, coords):
         x, y = coords
-        if x >= 282 and x <= 717 and y >= 438 and y <= 483:
+        if x >= 285 and x <= 714 and y >= 392 and y <= 434:
             self.pause_on = False
-        elif x >= 308 and x <= 692 and y >= 494 and y <= 537:
+        elif x >= 308 and x <= 692 and y >= 449 and y <= 491:
             new_game = Game(self.screen_size)
             new_game.start()
-        elif x >= 399 and x <= 600 and y >= 549 and y <= 594:
+        elif x >= 399 and x <= 600 and y >= 503 and y <= 544:
             menu = MainMenu(self.screen_size)
             menu.start()
+        elif x >= 263 and x <= 755 and y >= 552 and y <= 598:
+            self.terminate()
 
     def terminate(self):
         pygame.quit()
@@ -95,12 +97,14 @@ class LoseMenu:
 
     def get_click(self, coords):
         x, y = coords
-        if x >= 304 and x <= 690 and y >= 461 and y <= 504:
+        if x >= 304 and x <= 690 and y >= 431 and y <= 470:
             new_game = Game(self.screen_size)
             new_game.start()
-        elif x >= 397 and x <= 600 and y >= 517 and y <= 559:
+        elif x >= 402 and x <= 601 and y >= 486 and y <= 529:
             menu = MainMenu(self.screen_size)
             menu.start()
+        elif x >= 254 and x <= 748 and y >= 541 and y <= 582:
+            self.terminate()
 
     def terminate(self):
         pygame.quit()
