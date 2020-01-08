@@ -26,8 +26,9 @@ class Game:
 
     def get_click(self, coords):
         x, y = coords
-        menu = Menu.PauseMenu(self.screen_size)
-        menu.start()
+        if x <= 65 and y <= 65:
+            menu = Menu.PauseMenu(self.screen_size)
+            menu.start()
 
 
 
