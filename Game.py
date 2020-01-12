@@ -47,15 +47,25 @@ class Game:
             snake.check_collision(self)
             snake.draw_snake(self.menu_screen)
             self.menu_screen.blit(food.image, food.rect)
+            self.show_score()
             pygame.display.flip()
             self.clock.tick(20)
             count += 1
+            self.show_score()
 
     def get_click(self, coords):
         x, y = coords
         if x <= 65 and y <= 65:
             menu = Menu.PauseMenu(self.screen_size)
             menu.start()
+        print(coords)
+
+    def show_score(self):
+        score_font = pygame.font.SysFont('tahoma', 50)
+        score_surf = score_font.render('Score: {0}'.format(self.score), True, pygame.Color(255, 255, 255))
+        score_rect = score_surf.get_rect()
+        score_rect.midtop = (193, 5)
+        self.menu_screen.blit(score_surf, score_rect)
 
     def game_over(self):
         lose_menu = Menu.LoseMenu(self.screen_size)
