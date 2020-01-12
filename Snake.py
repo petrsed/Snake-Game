@@ -21,8 +21,8 @@ class Snake:
         self.screen_height = screen_height
         self.snake_size = 20
         self.snake_step = 20
-        self.snake_head_pos = [100, 50]
-        self.snake_body_pos = [[value, 50] for value in range(100, 0, -30)]
+        self.snake_head_pos = [100, 300]
+        self.snake_body_pos = [[value, 300] for value in range(150, 0, -30)]
         self.direction = self.right
 
     def check_direction(self, change_direction):
@@ -64,8 +64,8 @@ class Snake:
             game.game_over()
 
     def check_boundaries(self):
-        return (self.snake_head_pos[0] > self.screen_width or self.snake_head_pos[0] < 0)\
-               or (self.snake_head_pos[1] > self.screen_height or self.snake_head_pos[1] < 0)
+        return (self.snake_head_pos[0] > 920 or self.snake_head_pos[0] < 60)\
+               or (self.snake_head_pos[1] > 830 or self.snake_head_pos[1] < 105)
 
     def check_eating_oneself(self):
         for block in self.snake_body_pos[1:]:
@@ -78,14 +78,14 @@ class Food(pygame.sprite.Sprite):
         self.images = [load_image(el) for el in ['apple.png', 'banana.png', 'cherry.png']]
         self.image = None
         self.rect = None
-        self.size = 30, 30
+        self.size = 50, 50
         self.screen_width, self.screen_height = screen_width, screen_height
         self.update()
 
     def update(self):
         self.set_image()
-        self.rect.x = random.randrange(1, self.screen_width // 10) * 10
-        self.rect.y = random.randrange(1, self.screen_height // 10) * 10
+        self.rect.x = random.randrange(110, 890)
+        self.rect.y = random.randrange(175, 790)
 
     def set_image(self):
         self.image = pygame.transform.scale(choice(self.images), self.size)
