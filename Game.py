@@ -117,7 +117,7 @@ class SoloGame:
 
     def game_over(self):
         pygame.mixer.music.stop()
-        lose_menu = Menu.LoseMenu(self.screen_size, 1)
+        lose_menu = Menu.LoseMenu(self.screen_size, 1, self.score, -1)
         lose_menu.start()
 
     def terminate(self):
@@ -259,7 +259,7 @@ class DuoGame:
 
     def game_over(self):
         pygame.mixer.music.stop()
-        lose_menu = Menu.LoseMenu(self.screen_size, 2)
+        lose_menu = Menu.LoseMenu(self.screen_size, 2, self.first_score, self.second_score)
         lose_menu.start()
 
     def terminate(self):
