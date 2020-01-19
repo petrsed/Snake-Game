@@ -1,6 +1,7 @@
 import pygame
 import sys
 from Game import SoloGame, DuoGame
+from Buttons import SoundButton
 
 
 class StartMenu:
@@ -12,8 +13,10 @@ class StartMenu:
         self.clock = pygame.time.Clock()
         pygame.display.update()
         pygame.mixer.music.load('data/music/logo.mp3')
+        self.SoundButton = SoundButton(self.menu_screen)
 
     def start(self):
+
         pygame.mixer.music.play(1)
         pygame.mixer.music.set_volume(0.4)
         self.menu_on = True
@@ -28,6 +31,7 @@ class StartMenu:
                         game = SoloGame(self.screen_size)
                         game.start()
             self.menu_screen.blit(self.menu_background_image, (0, 0))
+            self.SoundButton.draw()
             pygame.display.flip()
             self.clock.tick(60)
 
@@ -41,11 +45,12 @@ class StartMenu:
             game.start()
         elif x >= 0 and x <= 65 and y >= 0 and y <= 65:
             self.terminate()
+        elif x >= 932 and x <= 980 and y >= 15 and y <= 53:
+            self.SoundButton.switch_music()
 
     def terminate(self):
         pygame.quit()
         sys.exit()
-
 
 class PauseMenu:
     def __init__(self, size, game_type):
@@ -96,13 +101,17 @@ class PauseMenu:
 
 
 class LoseMenu:
-    def __init__(self, size, game_type):
+    def __init__(self, size, game_type, first_score, second_score):
         self.game_type = game_type
+        self.first_score = first_score
+        self.second_score = second_score
         self.screen_size = size
         self.menu_screen = pygame.display.set_mode(self.screen_size)
         self.menu_background_image = pygame.image.load('data/backgrounds/LoseMenuBackground.png').convert()
         self.clock = pygame.time.Clock()
         self.lose_sound = pygame.mixer.Sound('data/music/lose.wav')
+        self.first_snake_head = pygame.transform.scale(pygame.image.load('data/snake/red/SnakeHeadUp.png'), (50, 50))
+        self.second_snake_head = pygame.transform.scale(pygame.image.load('data/snake/purple/SnakeHeadUp.png'), (50, 50))
         pygame.display.update()
 
     def start(self):
@@ -126,6 +135,8 @@ class LoseMenu:
                             new_game = SoloGame(self.screen_size)
                             new_game.start()
             self.menu_screen.blit(self.menu_background_image, (0, 0))
+            if self.second_score != -1:
+                self.show_score()
             pygame.display.flip()
             self.clock.tick(60)
 
@@ -143,6 +154,21 @@ class LoseMenu:
             menu.start()
         elif x >= 254 and x <= 748 and y >= 541 and y <= 582:
             self.terminate()
+
+    def show_score(self):
+        score_font = pygame.font.SysFont('tahoma', 50)
+        first_score_surf = score_font.render('Score: {0}'.format(self.first_score), True, pygame.Color(255, 255, 255))
+        second_score_surf = score_font.render('Score: {0}'.format(self.second_score), True, pygame.Color(255, 255, 255))
+
+        first_score_rect = first_score_surf.get_rect()
+        first_score_rect.midtop = (380, 255)
+        second_score_rect = second_score_surf.get_rect()
+        second_score_rect.midtop = (660, 255)
+
+        self.menu_screen.blit(self.first_snake_head, (230, 263))
+        self.menu_screen.blit(self.second_snake_head, (510, 263))
+        self.menu_screen.blit(first_score_surf, first_score_rect)
+        self.menu_screen.blit(second_score_surf, second_score_rect)
 
     def terminate(self):
         pygame.quit()
