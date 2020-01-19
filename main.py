@@ -3,5 +3,5 @@ import Menu
 
 pygame.init()
 screen_size = (1000, 900)
-menu = Menu.MainMenu(screen_size)
-menu.start()
+start_menu = Menu.StartMenu(screen_size)
+start_menu.start()
