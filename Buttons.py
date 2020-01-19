@@ -1,16 +1,28 @@
 import pygame
 
-class SoundOn(pygame.sprite.Sprite):
-    paths = {'RIGHT': 'SnakeHeadRight.png', 'LEFT': 'SnakeHeadLeft.png', 'UP': 'SnakeHeadUp.png',
-             'DOWN': 'SnakeHeadDown.png'}
 
-    def __init__(self, pos, direction, snake_type):
+class SoundButton(pygame.sprite.Sprite):
+
+    def __init__(self, screen):
         super().__init__()
-        self.image = pygame.transform.scale(load_image(self.paths[direction], snake_type), (60, 60))
-        self.rect = self.image.get_rect()
-        self.rect.x, self.rect.y = pos
-        self.rect.x -= 20
-        self.rect.y -= 20
+        self.mode = True
+        self.on_image = pygame.image.load('data/buttons/SoundOn.png')
+        self.off_image = pygame.image.load('data/buttons/SoundOff.png')
+        self.screen = screen
 
-    def get_pos(self):
-        return self.rect.x, self.rect.y
+    def switch_music(self):
+        self.mode = not self.mode
+        if not self.mode:
+            pygame.mixer.music.stop()
+        else:
+            pygame.mixer.music.play(1)
+
+    def draw(self):
+        if self.mode:
+            image = self.on_image
+        else:
+            image = self.off_image
+        self.screen.blit(image, (930, 10))
+
+    def check_mode(self):
+        return self.mode
