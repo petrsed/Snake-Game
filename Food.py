@@ -14,11 +14,15 @@ class Food(pygame.sprite.Sprite):
 
         self.update()
 
-    def update(self):
-
+    def update(self, coords=[]):
         self.set_image()
-        self.rect.x = random.randrange(110, 890)
-        self.rect.y = random.randrange(175, 790)
+        x_values = set(range(110, 890))
+        y_values = set(range(175, 790))
+        for x_coord, y_coord in coords:
+            x_values -= set(range(x_coord - self.size[0] // 2, x_coord + int(self.size[0] * 1.5) + 1))
+            y_values -= set(range(y_coord - self.size[0] // 2, y_coord + int(self.size[0] * 1.5) + 1))
+        self.rect.x = random.choice(list(x_values))
+        self.rect.y = random.choice(list(y_values))
 
     def set_image(self):
         self.image = pygame.transform.scale(random.choice(self.images), self.size)

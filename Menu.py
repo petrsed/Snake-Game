@@ -1,7 +1,6 @@
 import pygame
 import sys
 from Game import SoloGame, DuoGame
-from Buttons import SoundButton
 
 
 class StartMenu:
@@ -13,10 +12,8 @@ class StartMenu:
         self.clock = pygame.time.Clock()
         pygame.display.update()
         pygame.mixer.music.load('data/music/logo.mp3')
-        self.SoundButton = SoundButton(self.menu_screen)
 
     def start(self):
-
         pygame.mixer.music.play(1)
         pygame.mixer.music.set_volume(0.4)
         self.menu_on = True
@@ -31,7 +28,6 @@ class StartMenu:
                         game = SoloGame(self.screen_size)
                         game.start()
             self.menu_screen.blit(self.menu_background_image, (0, 0))
-            self.SoundButton.draw()
             pygame.display.flip()
             self.clock.tick(60)
 
@@ -45,16 +41,16 @@ class StartMenu:
             game.start()
         elif x >= 0 and x <= 65 and y >= 0 and y <= 65:
             self.terminate()
-        elif x >= 932 and x <= 980 and y >= 15 and y <= 53:
-            self.SoundButton.switch_music()
 
     def terminate(self):
         pygame.quit()
         sys.exit()
 
+
 class PauseMenu:
     def __init__(self, size, game_type):
         self.screen_size = size
+        self.pause_on = False
         self.menu_screen = pygame.display.set_mode(self.screen_size)
         self.menu_background_image = pygame.image.load('data/backgrounds/PauseMenuBackground.png').convert()
         self.clock = pygame.time.Clock()
@@ -80,19 +76,19 @@ class PauseMenu:
 
     def get_click(self, coords):
         x, y = coords
-        if x >= 285 and x <= 714 and y >= 392 and y <= 434:
+        if 285 <= x <= 714 and 392 <= y <= 434:
             self.pause_on = False
-        elif x >= 308 and x <= 692 and y >= 449 and y <= 491:
+        elif 308 <= x <= 692 and 449 <= y <= 491:
             if self.game_type == 1:
                 new_game = SoloGame(self.screen_size)
                 new_game.start()
             elif self.game_type == 2:
                 new_game = DuoGame(self.screen_size)
                 new_game.start()
-        elif x >= 399 and x <= 600 and y >= 503 and y <= 544:
+        elif 399 <= x <= 600 and 503 <= y <= 544:
             menu = StartMenu(self.screen_size)
             menu.start()
-        elif x >= 263 and x <= 755 and y >= 552 and y <= 598:
+        elif 263 <= x <= 755 and 552 <= y <= 598:
             self.terminate()
 
     def terminate(self):

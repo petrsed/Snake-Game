@@ -17,19 +17,23 @@ class SoloGame:
         self.menu_background_image = pygame.image.load('data/backgrounds/GameBackground.png').convert()
         self.clock = pygame.time.Clock()
         self.fps = 15
-        self.next_wall_score_spawn = 10
-        self.walls = list()
+        self.score_next_wall = 10
+        self.walls = []
+        self.coords_walls = []
         self.level = 1
         self.SoundButton = SoundButton(self.menu_screen)
+        self.food_sound = pygame.mixer.Sound('data/music/food.wav')
+        self.level_up_sound = pygame.mixer.Sound('data/music/level.wav')
+        self.game_on = False
         pygame.display.update()
 
     def start(self):
+        old_score = 0
         count = 0
         snake = Snake.Snake(self.x, self.y, 'red')
         food = Food.Food(self.x, self.y)
         pygame.mixer.music.load('data/music/soundtrack.mp3')
-        self.food_sound = pygame.mixer.Sound('data/music/food.wav')
-        self.level_up_sound = pygame.mixer.Sound('data/music/level.wav')
+
         if self.SoundButton.check_mode():
             pygame.mixer.music.play(1)
             pygame.mixer.music.set_volume(0.4)
@@ -57,32 +61,29 @@ class SoloGame:
             self.menu_screen.blit(self.menu_background_image, (0, 0))
             self.SoundButton.draw()
             snake.change_head_pos()
-            # for wall in self.walls:
-            #    value = snake.check_snake(wall.get_pos(), wall.size[0])
-            #    if value:
-            #        self.game_over()
-            value = snake.check_snake(food.get_pos(), food.size[0])
-            if value:
+            ate_snake = snake.check_snake(food.get_pos(), food.size[0])
+            if ate_snake:
                 self.score += 1
-                if self.SoundButton.check_mode():
-                    pygame.mixer.Sound.play(self.food_sound)
-                snake.add_element_snake()
-                food.update()
-
-            if self.score == self.next_wall_score_spawn:
+            if self.score != old_score and self.score % self.score_next_wall == 0:
                 wall = Obstacles.Wall(self.x, self.y)
-                wall.spawn()
+                wall.spawn(self.coords_walls)
+                self.coords_walls.append(wall.get_pos())
                 self.level += 1
+                old_score = self.score
                 if self.SoundButton.check_mode():
                     pygame.mixer.Sound.play(self.level_up_sound)
                 self.walls.append(wall)
-                self.next_wall_score_spawn += 10
+            if ate_snake:
+                if self.SoundButton.check_mode():
+                    pygame.mixer.Sound.play(self.food_sound)
+                food.update(self.coords_walls)
             for wall in self.walls:
                 self.menu_screen.blit(wall.image, wall.rect)
             snake.snake_design()
 
             snake.update(self.menu_screen)
-            snake.check_collision(self)
+            size_wall = self.get_wall_size()
+            snake.check_collision(self, self.coords_walls, size_wall)
             self.menu_screen.blit(food.image, food.rect)
             self.show_score()
             self.show_level()
@@ -91,6 +92,9 @@ class SoloGame:
             count += 1
             self.show_score()
 
+    def get_wall_size(self):
+        return self.walls[0].size[0] if self.walls else None
+
     def get_click(self, coords):
         x, y = coords
         if x <= 65 and y <= 65:
@@ -98,7 +102,7 @@ class SoloGame:
             menu = Menu.PauseMenu(self.screen_size, 1)
             menu.start()
             pygame.mixer.music.unpause()
-        if x >= 927 and x <= 995 and y >= 5 and y <= 61:
+        if 927 <= x <= 995 and 5 <= y <= 61:
             self.SoundButton.switch_music()
 
     def show_score(self):
@@ -134,8 +138,9 @@ class DuoGame:
         self.menu_background_image = pygame.image.load('data/backgrounds/GameBackground.png').convert()
         self.clock = pygame.time.Clock()
         self.fps = 15
-        self.next_wall_score_spawn = 10
+        self.score_next_wall = 10
         self.walls = list()
+        self.coords_walls = []
         self.level = 1
         self.first_snake_head = pygame.transform.scale(pygame.image.load('data/snake/red/SnakeHeadUp.png'), (50, 50))
         self.second_snake_head = pygame.transform.scale(pygame.image.load('data/snake/purple/SnakeHeadUp.png'), (50, 50))
@@ -149,6 +154,7 @@ class DuoGame:
 
     def start(self):
         count = 0
+        old_score = 0
         first_snake, second_snake = Snake.Snake(self.x, self.y, 'red'), Snake.Snake(self.x, self.y, 'purple')
         food = Food.Food(self.x, self.y)
         game_on = True
@@ -184,29 +190,26 @@ class DuoGame:
             first_snake.change_head_pos()
             second_snake.change_head_pos()
             self.SoundButton.draw()
-            # for wall in self.walls:
-            #    value = snake.check_snake(wall.get_pos(), wall.size[0])
-            #    if value:
-            #        self.game_over()
-            value = first_snake.check_snake(food.get_pos(), food.size[0])
-            if value:
+            ate_snake_1 = first_snake.check_snake(food.get_pos(), food.size[0])
+            ate_snake_2 = second_snake.check_snake(food.get_pos(), food.size[0])
+            if ate_snake_1:
                 self.first_score += 1
-                pygame.mixer.Sound.play(self.food_sound)
-                first_snake.add_element_snake()
-                food.update()
-            value = second_snake.check_snake(food.get_pos(), food.size[0])
-            if value:
+            elif ate_snake_2:
                 self.second_score += 1
-                pygame.mixer.Sound.play(self.food_sound)
-                second_snake.add_element_snake()
-                food.update()
-            if (self.first_score + self.second_score) == self.next_wall_score_spawn:
+            sum_score = self.first_score + self.second_score
+            if sum_score != old_score and sum_score % self.score_next_wall == 0:
                 wall = Obstacles.Wall(self.x, self.y)
-                wall.spawn()
+                wall.spawn(self.coords_walls)
+                self.coords_walls.append(wall.get_pos())
                 self.level += 1
-                pygame.mixer.Sound.play(self.level_up_sound)
+                old_score = sum_score
+                if self.SoundButton.check_mode():
+                    pygame.mixer.Sound.play(self.level_up_sound)
                 self.walls.append(wall)
-                self.next_wall_score_spawn += 10
+            if ate_snake_1 or ate_snake_2:
+                if self.SoundButton.check_mode():
+                    pygame.mixer.Sound.play(self.food_sound)
+                food.update(self.coords_walls)
             for wall in self.walls:
                 self.menu_screen.blit(wall.image, wall.rect)
             first_snake.snake_design()
@@ -214,8 +217,9 @@ class DuoGame:
 
             first_snake.update(self.menu_screen)
             second_snake.update(self.menu_screen)
-            first_snake.check_collision(self)
-            second_snake.check_collision(self)
+            size_wall = self.get_wall_size()
+            first_snake.check_collision(self, self.coords_walls, size_wall)
+            second_snake.check_collision(self, self.coords_walls, size_wall)
 
             self.menu_screen.blit(food.image, food.rect)
             self.show_score()
@@ -225,6 +229,12 @@ class DuoGame:
             count += 1
             self.show_score()
 
+    def get_coords_walls(self):
+        return [wall.get_pos() for wall in self.walls]
+
+    def get_wall_size(self):
+        return self.walls[0].size[0] if self.walls else None
+
     def get_click(self, coords):
         x, y = coords
         if x <= 65 and y <= 65:
@@ -232,7 +242,7 @@ class DuoGame:
             menu = Menu.PauseMenu(self.screen_size, 2)
             menu.start()
             pygame.mixer.music.unpause()
-        if x >= 927 and x <= 995 and y >= 5 and y <= 61:
+        if 927 <= x <= 995 and 5 <= y <= 61:
             self.SoundButton.switch_music()
 
     def show_score(self):
